@@ -1087,6 +1087,11 @@ class ArrowSeries(CompliantSeries):
         from narwhals._arrow.dataframe import ArrowDataFrame
 
         def _hist_from_bin_count(bin_count: int):  # type: ignore[no-untyped-def] # noqa: ANN202
+            if pc.count(self._native_series) == pa.scalar(0):
+                counts = np.zeros(bin_count)
+                bin_left = np.linspace(0, 1, bin_count, endpoint=False)
+                bin_right = np.linspace(1/bin_count, 1, bin_count)
+                return counts, bin_left, bin_right
             d = pc.min_max(self._native_series)
             lower, upper = d["min"], d["max"]
             pad_lowest_bin = False

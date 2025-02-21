@@ -299,9 +299,24 @@ def test_hist_no_data(
         nw.col("values").cast(nw.Float64)
     )["values"]
     for include_breakpoint in [True, False]:
-        result = s.hist(bin_count=10, include_breakpoint=include_breakpoint)
+        bin_count = 10
+        result = s.hist(bin_count=bin_count, include_breakpoint=include_breakpoint)
         assert len(result) == 10
         assert result["count"].sum() == 0
+
+        if include_breakpoint:
+            first, *_, last = result['breakpoint'].to_list()
+            assert first == 1 / bin_count
+            assert last == 1
+
+        bin_count = 1
+        result = s.hist(bin_count=bin_count, include_breakpoint=include_breakpoint)
+        assert len(result) == 1
+        assert result["count"].sum() == 0
+
+        if include_breakpoint:
+            first = result['breakpoint'].to_list()[0]
+            assert first == 1 / bin_count
 
     for include_breakpoint in [True, False]:
         result = s.hist(bins=[1, 5, 10], include_breakpoint=include_breakpoint)

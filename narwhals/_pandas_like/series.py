@@ -1039,7 +1039,10 @@ class PandasLikeSeries(CompliantSeries):
                 data = {"breakpoint": bins[1:], "count": zeros(shape=len(bins) - 1)}
             else:
                 count = cast("int", bin_count)
-                data = {"breakpoint": linspace(0, 1, count), "count": zeros(shape=count)}
+                if bin_count == 1:
+                    data = {"breakpoint": [1.0], "count": [0]}
+                else:
+                    data = {"breakpoint": linspace(1/count, 1, count), "count": zeros(shape=count)}
 
             if not include_breakpoint:
                 del data["breakpoint"]
